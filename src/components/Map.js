@@ -1,27 +1,34 @@
 import React, { Component } from 'react';
-import { MapView, Location, Permissions } from 'expo';
+import { View } from 'react-native';
+import { MapView, Location, Permissions, Constants } from 'expo';
+import { connect } from 'react-redux';
+import { locationAdd } from '../actions';
 
 const deltas = {
-  latitudeDelta: 0.0922,
-  longitudeDelta: 0.0421
+  latitudeDelta: 0.0080,
+  longitudeDelta: 0.0040
 };
 
-const { Marker } = MapView;
+const { Marker, Polyline } = MapView;
 
 class Map extends Component {
   constructor(props) {
     super(props);
     this.setInitialRegionAsync();
     setInterval(() => this.getLocationAsync(), 10000);
+    //Hack to ensure the showsMyLocationButton is shown initially. Idea is to force a repaint
+    setTimeout(() => this.setState({ statusBarHeight: Constants.statusBarHeight }), 1000);
   }
 
   state = {
     region: null,
     locations: [],
-    errorMessage: ''
+    errorMessage: '',
+    statusBarHeight: 5
   }
 
   onRegionChangeComplete(region) {
+    console.log('onRegionChangeComplete running');
     this.setState({ region });
   }
 
@@ -32,7 +39,9 @@ class Map extends Component {
   }
 
   setInitialRegionAsync = async () => {
-    this.getPermission();
+    console.log('setInitialRegionAsync running (getting permission)');
+    await this.getPermission();
+    console.log('setInitialRegionAsync running (permission granted)');
     const location = await Location.getCurrentPositionAsync({});
     this.updateLocations(location);
     const region = {
@@ -44,7 +53,7 @@ class Map extends Component {
   }
 
   getPermission = async () => {
-   const { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
       this.setState({
         errorMessage: 'Permission to access location was denied'
@@ -53,44 +62,71 @@ class Map extends Component {
   }
 
   updateLocations(location) {
-    console.log(this.state.locations);
-    this.setState({ locations: [...this.state.locations, location] });
+    this.props.locationAdd(location);
+    //console.log(this.state.locations);
+    //this.setState({ locations: [...this.state.locations, location] });
   }
 
-  renderMarkers() {
-    console.log("here");
+  /* renderMarkers() {
     return this.state.locations.map((location) => {
-      console.log("wwooo");
       return (
         <Marker
+          key={location.timestamp}
           coordinate={location.coords}
           title="foo"
           description="foo"
         />
       );
     });
+  }*/
+
+  renderPolyline() {
+    const coords = this.state.locations.map((location) => location.coords);
+    return (
+      <Polyline
+        coordinates={coords}
+        strokeWidth={10}
+        strokeColor={'#50E636'}
+      />
+    );
   }
 
   render() {
     const { region } = this.state;
     return (
-      <MapView
-        style={styles.container}
-        region={region}
-        onRegionChange={this.onRegionChangeComplete}
-        showsUserLocation
-        showsMyLocationButton
-      >
-        {this.renderMarkers()}
-      </MapView>
+      // Setting a value (padding) we can change to force a repaint
+      // this is a hack to force a rerender and get the location button to show
+      // https://github.com/react-native-community/react-native-maps/issues/1033
+      <View style={{ paddingTop: this.state.statusBarHeight }}>
+        <MapView
+          showsUserLocation
+          showsMyLocationButton
+          showsScale
+          style={styles.container}
+          initialRegion={region}
+          region={region}
+          onRegionChangeComplete={this.onRegionChangeComplete.bind(this)}
+          mapPadding={styles.mapPadding}
+        >
+          {this.renderPolyline()}
+        </MapView>
+      </View>
     );
   }
 }
+
 const styles = {
   container: {
     width: '100%',
-    height: '80%',
+    height: '100%',
+  },
+  mapPadding: {
+    top: 20,
   }
 };
 
-export default Map;
+const mapStateToProps = (state) => {
+  return {};
+};
+
+export default connect(mapStateToProps, { locationAdd })(Map);
