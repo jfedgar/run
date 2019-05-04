@@ -1,7 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+// redux
+import { Provider } from 'react-redux';
+import { createStore, compose, applyMiddleware } from 'redux';
+import ReduxThunk from 'redux-thunk';
+import reducers from './src/reducers';
+
 import { Font } from 'expo';
-import Map from './src/components/Map';
+import NunitoBold from './assets/fonts/Nunito-Bold.ttf';
+import MainNav from './MainNav';
+
+// this is for redux devtools, we use this in place of 'compose' when applying other middleware to the store
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export default class App extends React.Component {
 
@@ -9,30 +19,18 @@ export default class App extends React.Component {
 
   componentDidMount() {
     Font.loadAsync({
-      'nunito-bold': require('./assets/fonts/Nunito-Bold.ttf'),
+      'nunito-bold': NunitoBold,
     })
-    .then(() => this.setState({ fontLoaded: true }));
+      .then(() => this.setState({ fontLoaded: true }));
   }
 
   render() {
+    const store = createStore(reducers, {}, composeEnhancers(applyMiddleware(ReduxThunk)));
+
     return (
-      <View style={styles.container}>
-        <View style={{ flex: 2, width: '100%' }}>
-          <Map />
-        </View>
-        <View style={{ flex: 2 }}>
-          <Text>Open up App.js to start working on your app!</Text>
-        </View>
-      </View>
+      <Provider store={store}>
+        <MainNav />
+      </Provider>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
