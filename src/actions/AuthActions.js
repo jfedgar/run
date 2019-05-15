@@ -1,7 +1,3 @@
-// note: these are actually "action creators"
-// they are functions that return an action
-// the action must be a javascript object with a 'type' property
-// with redux-thunk they can optionally return a function 
 import firebase from 'firebase';
 import {
   EMAIL_CHANGED,
