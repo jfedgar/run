@@ -20,12 +20,15 @@ export default class App extends React.Component {
   componentDidMount() {
     Font.loadAsync({
       'nunito-bold': NunitoBold,
-    })
-      .then(() => this.setState({ fontLoaded: true }));
+    }).then(() => this.setState({ fontLoaded: true }));
   }
 
   render() {
     const store = createStore(reducers, {}, composeEnhancers(applyMiddleware(ReduxThunk)));
+    store.subscribe(() => {
+      console.log("Store state changed");
+      console.log(store.getState());
+    });
 
     return (
       <Provider store={store}>

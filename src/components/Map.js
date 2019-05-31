@@ -22,7 +22,6 @@ class Map extends Component {
 
   state = {
     region: null,
-    locations: [],
     errorMessage: '',
     statusBarHeight: 5
   }
@@ -81,7 +80,9 @@ class Map extends Component {
   }*/
 
   renderPolyline() {
-    const coords = this.state.locations.map((location) => location.coords);
+    console.log({ foofoo: this.props.locations });
+
+    const coords = this.props.locations.map((location) => location.coords);
     return (
       <Polyline
         coordinates={coords}
@@ -97,14 +98,13 @@ class Map extends Component {
       // Setting a value (padding) we can change to force a repaint
       // this is a hack to force a rerender and get the location button to show
       // https://github.com/react-native-community/react-native-maps/issues/1033
-      <View style={{ paddingTop: this.state.statusBarHeight }}>
+      <View style={[{ paddingTop: this.state.statusBarHeight }, this.props.containerStyle]}>
         <MapView
           showsUserLocation
           showsMyLocationButton
           showsScale
-          style={styles.container}
+          style={[styles.mapView, this.props.mapStyle]}
           initialRegion={region}
-          region={region}
           onRegionChangeComplete={this.onRegionChangeComplete.bind(this)}
           mapPadding={styles.mapPadding}
         >
@@ -116,17 +116,23 @@ class Map extends Component {
 }
 
 const styles = {
-  container: {
+  mapView: {
     width: '100%',
     height: '100%',
+    zIndex: -1
   },
   mapPadding: {
     top: 20,
   }
 };
 
-const mapStateToProps = (state) => {
-  return {};
+const mapStateToProps = ({ trip }) => {
+  console.log("map state to props called");
+  console.log({ blarg: trip.locations });
+  return {
+    trip,
+    locations: trip.locations
+  };
 };
 
 export default connect(mapStateToProps, { locationAdd })(Map);
