@@ -2,6 +2,7 @@ import React from 'react';
 
 // redux
 import { Provider } from 'react-redux';
+import { Provider as PaperProvider } from 'react-native-paper';
 import { createStore, compose, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reducers from './src/reducers';
@@ -20,7 +21,8 @@ export default class App extends React.Component {
   componentDidMount() {
     Font.loadAsync({
       'nunito-bold': NunitoBold,
-    }).then(() => this.setState({ fontLoaded: true }));
+    });
+    //.then(() => this.setState({ fontLoaded: true }));
   }
 
   render() {
@@ -32,7 +34,9 @@ export default class App extends React.Component {
 
     return (
       <Provider store={store}>
-        <MainNav />
+        <PaperProvider>
+          <MainNav />
+        </PaperProvider>
       </Provider>
     );
   }
