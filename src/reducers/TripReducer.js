@@ -6,6 +6,7 @@ import {
 } from '../actions/types';
 
 const INITIAL_STATE = {
+  running: false,
   locations: [],
   distance: 0,
   startTime: null,
@@ -22,11 +23,11 @@ export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case TRIP_START: {
       const start = new Date().getTime();
-      return { ...state, startTime: start };
+      return { ...state, running: true, startTime: start };
     }
     case TRIP_END: {
       const end = new Date().getTime();
-      return { ...state, endTime: end };
+      return { ...state, running: false, endTime: end };
     }
     case LOCATION_ADD: {
       const distance = calculateDistance(state.locations, action.payload);
