@@ -15,7 +15,7 @@ class Map extends Component {
   constructor(props) {
     super(props);
     this.setInitialRegionAsync();
-    setInterval(() => this.getLocationAsync(), 10000);
+    setInterval(() => this.getLocationAsync(), 5000);
     //Hack to ensure the showsMyLocationButton is shown initially. Idea is to force a repaint
     setTimeout(() => this.setState({ statusBarHeight: Constants.statusBarHeight }), 1000);
   }
@@ -27,14 +27,15 @@ class Map extends Component {
   }
 
   onRegionChangeComplete(region) {
-    console.log('onRegionChangeComplete running');
     this.setState({ region });
   }
 
   getLocationAsync = async () => {
-    this.getPermission();
-    const location = await Location.getCurrentPositionAsync({});
-    this.updateLocations(location);
+    if (this.props.running) {
+      this.getPermission();
+      const location = await Location.getCurrentPositionAsync({});
+      this.updateLocations(location);
+    }
   }
 
   setInitialRegionAsync = async () => {
@@ -61,7 +62,9 @@ class Map extends Component {
   }
 
   updateLocations(location) {
-    this.props.locationAdd(location);
+    if (this.props.running) {
+      this.props.locationAdd(location);
+    }
     //console.log(this.state.locations);
     //this.setState({ locations: [...this.state.locations, location] });
   }
@@ -80,8 +83,6 @@ class Map extends Component {
   }*/
 
   renderPolyline() {
-    console.log({ foofoo: this.props.locations });
-
     const coords = this.props.locations.map((location) => location.coords);
     return (
       <Polyline
@@ -127,10 +128,8 @@ const styles = {
 };
 
 const mapStateToProps = ({ trip }) => {
-  console.log("map state to props called");
-  console.log({ blarg: trip.locations });
   return {
-    trip,
+    running: trip.running,
     locations: trip.locations
   };
 };
