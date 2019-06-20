@@ -24,12 +24,13 @@ export default class AuthScreen extends Component {
   constructor(props) {
     super(props);
     const config = {
-      apiKey: 'AIzaSyAP6vNr-kr7WS8pitiJD-jyCn-sugxRbfo',
-      authDomain: 'emp-manager-31b4a.firebaseapp.com',
-      databaseURL: 'https://emp-manager-31b4a.firebaseio.com',
-      projectId: 'emp-manager-31b4a',
-      storageBucket: 'emp-manager-31b4a.appspot.com',
-      messagingSenderId: '481552999225'
+      apiKey: 'AIzaSyCM1ZYrx16FGTYFC4dTEOYfINdvTvLpOdM',
+      authDomain: 'runn-1ef1a.firebaseapp.com',
+      databaseURL: 'https://runn-1ef1a.firebaseio.com',
+      projectId: 'runn-1ef1a',
+      storageBucket: 'runn-1ef1a.appspot.com',
+      messagingSenderId: '581622038504',
+      appId: '1:581622038504:web:d7de9a1605376408'
     };
     firebase.initializeApp(config);
   }
@@ -38,7 +39,8 @@ export default class AuthScreen extends Component {
     firebase.auth().onAuthStateChanged(user => {
       console.log('firebase auth onAuthStateChanged');
       console.log(user);
-      this.props.navigation.navigate(user ? 'map' : 'login');
+
+      this.props.navigation.navigate(user ? 'trip' : 'login');
     });
   }
 

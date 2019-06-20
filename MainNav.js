@@ -7,6 +7,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import MapScreen from './src/screens/MapScreen';
+import TripsScreen from './src/screens/TripsScreen';
 
 const MainNavigator = createBottomTabNavigator({
   auth: {
@@ -17,9 +18,12 @@ const MainNavigator = createBottomTabNavigator({
     }),
     navigationOptions: { tabBarVisible: false }
   },
-  map: {
-    navigationOptions: { tabBarVisible: false },
-    screen: MapScreen
+  trip: {
+    screen: createSwitchNavigator({
+      trips: { screen: TripsScreen },
+      map: { screen: MapScreen }
+    }),
+    navigationOptions: { tabBarVisible: false }
   }
 }, {
     tabBarOptions: {
