@@ -7,4 +7,8 @@ export const LOGOUT_USER = 'logout_user';
 
 export const LOCATION_ADD = 'location_add';
 export const TRIP_START = 'trip_start';
-export const TRIP_END = 'trip_END';
+export const TRIP_PAUSE = 'trip_pause';
+export const TRIPS_FETCH_SUCCESS = 'trips_fetch_success';
+export const TRIP_RESET = 'trip_reset';
+export const TRIP_SAVE = 'trip_save';
+export const SET_TIME = 'set_time';
