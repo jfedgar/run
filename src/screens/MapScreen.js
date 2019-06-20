@@ -1,31 +1,41 @@
 import React, { Component } from 'react';
 import { View, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-import { Button } from 'react-native-paper';
+import { Button, FAB, Portal } from 'react-native-paper';
 import { LinearGradient } from 'expo';
 import Map from '../components/Map';
 import TripInfoBar from '../components/TripInfoBar';
 import BackButton from '../../assets/images/back2x.png';
 import PauseButton from '../../assets/images/pause2x.png';
 import PlayButton from '../../assets/images/play2x.png';
-import {
-  signOut,
-  startTrip,
-  stopTrip
-} from '../actions';
+import * as actions from '../actions';
 
 class MapScreen extends Component {
 
+  state = {
+    fabOpen: false
+  };
+
   toggleTrip() {
-    if (this.props.running) {
-      this.props.stopTrip();
+    if (this.props.trip.running) {
+      this.props.pauseTrip();
     } else {
       this.props.startTrip();
     }
   }
 
+  resetTrip() {
+    console.log('reset trip');
+    this.props.resetTrip();
+  }
+
+  saveTrip() {
+    console.log('save trip');
+    this.props.saveTrip(this.props.trip);
+  }
+
   renderPlayButton() {
-    if (this.props.running) {
+    if (this.props.trip.running) {
       return (<Image
         source={PauseButton}
         style={{ resizeMode: 'contain', width: '100%', height: '100%' }}
@@ -38,6 +48,7 @@ class MapScreen extends Component {
   }
 
   render() {
+    const { trip } = this.props;
     return (
       <View style={styles.container}>
         <View style={{ width: '15%', aspectRatio: 1, position: 'absolute', top: '7%', left: '2%' }}>
@@ -65,7 +76,7 @@ class MapScreen extends Component {
 
         <View style={{ flex: 2 }}>
 
-          <TripInfoBar running={this.props.running} />
+          <TripInfoBar />
 
           <Button
             style={{ borderRadius: 1, borderColor: "black", position: 'absolute', bottom: 0 }}
@@ -74,6 +85,35 @@ class MapScreen extends Component {
           >
             sign out
           </Button>
+
+          <Portal>
+            <FAB.Group
+              open={this.state.fabOpen}
+              icon={this.state.fabOpen ? 'close' : 'add'}
+              color='black'
+              actions={[
+                {
+                  icon: trip.running ? 'pause' : 'play-arrow',
+                  label: trip.running ? 'pause' : 'start',
+                  style: { backgroundColor: '#25BECA' },
+                  onPress: this.toggleTrip.bind(this)
+                },
+                {
+                  icon: 'loop',
+                  label: 'reset',
+                  style: { backgroundColor: '#25BECA' },
+                  onPress: this.resetTrip.bind(this)
+                },
+                {
+                  icon: 'save',
+                  label: 'save',
+                  style: { backgroundColor: '#25BECA' },
+                  onPress: this.saveTrip.bind(this)
+                },
+              ]}
+              onStateChange={({ open }) => this.setState({ fabOpen: open })}
+            />
+          </Portal>
 
         </View >
       </View >
@@ -110,10 +150,8 @@ const styles = {
 };
 
 const mapStateToProps = ({ trip }) => {
-  console.log("map state to props called in mapscreen")
-  return {
-    running: trip.running
-  };
+  console.log('map state to props called in mapscreen');
+  return { trip };
 };
 
-export default connect(mapStateToProps, { signOut, startTrip, stopTrip })(MapScreen);
+export default connect(mapStateToProps, actions)(MapScreen);
