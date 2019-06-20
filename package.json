@@ -8,20 +8,21 @@
   },
   "dependencies": {
     "expo": "^32.0.0",
-    "firebase": "^5.10.0",
+    "firebase": "^5.11.1",
     "haversine": "^1.1.1",
+    "lodash": "^4.17.11",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
-    "react-native-paper": "^2.15.2",
+    "react-native-paper": "^2.16.0",
     "react-native-stopwatch-timer": "0.0.20",
-    "react-navigation": "^3.8.1",
+    "react-navigation": "^3.11.0",
     "react-redux": "^6.0.1",
     "react-timer-mixin": "^0.13.4",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
+    "babel-preset-expo": "^5.2.0",
     "eslint-config-rallycoding": "^3.2.0"
   },
   "private": true
