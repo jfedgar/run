@@ -9,7 +9,7 @@ const deltas = {
   longitudeDelta: 0.0040
 };
 
-const { Marker, Polyline } = MapView;
+const { Polyline } = MapView;
 
 class Map extends Component {
   constructor(props) {
@@ -65,22 +65,7 @@ class Map extends Component {
     if (this.props.running) {
       this.props.locationAdd(location);
     }
-    //console.log(this.state.locations);
-    //this.setState({ locations: [...this.state.locations, location] });
   }
-
-  /* renderMarkers() {
-    return this.state.locations.map((location) => {
-      return (
-        <Marker
-          key={location.timestamp}
-          coordinate={location.coords}
-          title="foo"
-          description="foo"
-        />
-      );
-    });
-  }*/
 
   renderPolyline() {
     const coords = this.props.locations.map((location) => location.coords);
