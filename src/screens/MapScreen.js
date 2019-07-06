@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { View, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-import { Button, FAB, Portal } from 'react-native-paper';
-import { LinearGradient } from 'expo';
+import { Button, FAB, Portal, Modal } from 'react-native-paper';
+import { LinearGradient, takeSnapshotAsync } from 'expo';
 import Map from '../components/Map';
 import TripInfoBar from '../components/TripInfoBar';
 import BackButton from '../../assets/images/back2x.png';
@@ -12,12 +12,33 @@ import * as actions from '../actions';
 
 class MapScreen extends Component {
 
+  constructor(props) {
+    super(props);
+    // used for snapshot
+    this.mapRef = React.createRef();
+  }
+
   state = {
     fabOpen: false
   };
 
+  hideModal() {
+    this.setState({ modalVisible: false });
+  }
+
+  renderModal() {
+    return (
+      <Modal visible={false} onDismiss={this.hideModal.bind(this)}>
+        <Image
+          style={{ width: 100, height: 100 }}
+          source={{ isStatic: true, uri: `file://${this.state.mapSnapshot}` }}
+        />
+      </Modal>
+    );
+  }
+
   toggleTrip() {
-    if (this.props.trip.running) {
+    if (this.props.running) {
       this.props.pauseTrip();
     } else {
       this.props.startTrip();
@@ -25,17 +46,24 @@ class MapScreen extends Component {
   }
 
   resetTrip() {
-    console.log('reset trip');
     this.props.resetTrip();
   }
 
   saveTrip() {
     console.log('save trip');
-    this.props.saveTrip(this.props.trip);
+    this.takeSnapshot().then((snapshot) => {
+      setTimeout(this.props.saveTrip, 2000, snapshot);
+    });
+  }
+
+  takeSnapshot = async () => {
+    const options = { width: 100, height: 100, quality: 0.8 };
+    const result = await takeSnapshotAsync(this.mapRef, options);
+    return result;
   }
 
   renderPlayButton() {
-    if (this.props.trip.running) {
+    if (this.props.running) {
       return (<Image
         source={PauseButton}
         style={{ resizeMode: 'contain', width: '100%', height: '100%' }}
@@ -48,7 +76,7 @@ class MapScreen extends Component {
   }
 
   render() {
-    const { trip } = this.props;
+    const { running } = this.props;
     return (
       <View style={styles.container}>
         <View style={{ width: '15%', aspectRatio: 1, position: 'absolute', top: '7%', left: '2%' }}>
@@ -66,7 +94,7 @@ class MapScreen extends Component {
           </TouchableOpacity>
         </View>
 
-        <View style={{ flex: 2, width: '100%', zIndex: -1 }}>
+        <View ref={this.mapRef} style={{ flex: 2, width: '100%', zIndex: -1 }}>
           <Map containerStyle={{ zIndex: -1 }} />
           <LinearGradient
             colors={['rgba(255,255,255,0)', 'white']}
@@ -79,12 +107,22 @@ class MapScreen extends Component {
           <TripInfoBar />
 
           <Button
-            style={{ borderRadius: 1, borderColor: "black", position: 'absolute', bottom: 0 }}
+            style={{ position: 'absolute', bottom: 0 }}
             title="Sign Out"
             onPress={this.props.signOut}
           >
             sign out
           </Button>
+
+          <Button
+            style={{ borderWidth: 1, borderColor: "black", position: 'absolute', bottom: 50 }}
+            title="take snapshot"
+            onPress={this.takeSnapshot.bind(this)}
+          >
+            take snapshot
+          </Button>
+
+          {this.renderModal()}
 
           <Portal>
             <FAB.Group
@@ -93,8 +131,8 @@ class MapScreen extends Component {
               color='black'
               actions={[
                 {
-                  icon: trip.running ? 'pause' : 'play-arrow',
-                  label: trip.running ? 'pause' : 'start',
+                  icon: running ? 'pause' : 'play-arrow',
+                  label: running ? 'pause' : 'start',
                   style: { backgroundColor: '#25BECA' },
                   onPress: this.toggleTrip.bind(this)
                 },
@@ -149,9 +187,8 @@ const styles = {
   }
 };
 
-const mapStateToProps = ({ trip }) => {
-  console.log('map state to props called in mapscreen');
-  return { trip };
+const mapStateToProps = ({ trip: { running } }) => {
+  return { running };
 };
 
 export default connect(mapStateToProps, actions)(MapScreen);
