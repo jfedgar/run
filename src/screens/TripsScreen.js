@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
 import { List, FAB, Portal } from 'react-native-paper';
+import { FlatList } from 'react-native-gesture-handler';
 import _ from 'lodash';
 import * as actions from '../actions';
-import { FlatList } from 'react-native-gesture-handler';
 
 class TripsScreen extends Component {
 
@@ -19,7 +19,7 @@ class TripsScreen extends Component {
 
   newTrip() {
     // go to mapscreen
-    console.log("new trip");
+    console.log('new trip');
   }
 
   addGoal() {
@@ -27,13 +27,18 @@ class TripsScreen extends Component {
   }
 
   renderItem({ item }) {
-    console.log("ITEM", item);
     return (
-      <List.Item
-        title={item.name}
-        description={`distance: ${item.distance} time: ${item.elapsedTime}`}
-        left={() => <List.Icon color="#000" icon="directions-run" />}
-      />
+      <View style={{ textAlign: 'center', borderWidth: 1, borderColor: 'green' }}>
+        <List.Item
+          style={{ borderWidth: 1 }}
+          title={item.name}
+          titleStyle={{ textAlign: 'center' }}
+          description={`distance: ${item.distance} time: ${item.elapsedTime}`}
+          descriptionStyle={{ textAlign: 'center' }}
+          left={() => <List.Icon color="#000" icon="directions-run" />}
+          right={() => <List.Icon color="#000" icon="chevron-right" />}
+        />
+      </View>
     );
   }
 
@@ -48,10 +53,14 @@ class TripsScreen extends Component {
   }
 
   render() {
-    console.log("TRIPP", this.props.trips)
+    const { trips } = this.props;
     return (
       <View style={styles.container}>
         <FlatList
+          data={trips}
+          renderItem={this.renderItem}
+          keyExtractor={(trip, index) => index.toString()}
+          ListEmptyComponent={this.defaultList}
         />
         <Portal>
           <FAB.Group
@@ -84,6 +93,8 @@ const styles = {
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    marginTop: 40,
+    borderWidth: 5,
   },
 };
 

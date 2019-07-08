@@ -40,7 +40,7 @@ export default class AuthScreen extends Component {
       console.log('firebase auth onAuthStateChanged');
       console.log(user);
 
-      this.props.navigation.navigate(user ? 'trip' : 'login');
+      this.props.navigation.navigate(user ? 'trips' : 'login');
     });
   }
 
