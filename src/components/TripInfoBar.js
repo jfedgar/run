@@ -45,6 +45,7 @@ const TripInfoBar = ({ running, distance, startTime, setTime }) => {
             start={running}
             reset={running === false && startTime === null}
             getTime={setTime}
+            tickInterval={1000}
           />
         </View>
         <View style={{}}><Text>total time</Text></View>
