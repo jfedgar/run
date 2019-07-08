@@ -1,5 +1,6 @@
 import firebase from 'firebase';
 import 'firebase/firestore';
+import 'firebase/storage';
 import {
   LOCATION_ADD,
   TRIP_START,
@@ -13,7 +14,6 @@ import {
 // note that this will continue to listen for updates to the 'trips' for
 //  this user automatically update the 'trips' in the store when trips are changed
 export const fetchTrips = () => {
-
   return (dispatch) => {
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
@@ -35,21 +35,38 @@ export const fetchTrips = () => {
   };
 };
 
-export const saveTrip = ({ locations, distance, startTime, endTime, elapsedTime }) => {
-  return (dispatch) => {
-    const { currentUser } = firebase.auth();
-    const name = new Date(startTime).toLocaleString();
-    const trip = { locations, distance, startTime, endTime, name, elapsedTime };
-    const db = firebase.firestore();
+const storeScreenshot = async (localImageURI, snapshotName) => {
+  const storage = firebase.storage();
 
-    db.collection('users')
-      .doc(currentUser.uid)
-      .collection('trips')
-      .doc(startTime.toString())
-      .set(trip, { merge: true })
-      .then(() => {
-        dispatch({ type: TRIP_SAVE });
-      });
+  let response = await fetch(localImageURI);
+  let blob = await response.blob();
+  let storageRef = await storage.ref(`trip_screenshots/${snapshotName}`);
+  let result = await storageRef.put(blob);
+  return result;
+}
+
+export const saveTrip = (imageURI) => {
+  return async (dispatch, getState) => {
+    const db = firebase.firestore();
+    const { locations, distance, startTime, endTime, elapsedTime } = getState().trip;
+    const tripName = new Date(startTime).toLocaleString();
+    const trip = { name: tripName, locations, distance, startTime, endTime, elapsedTime };
+    const { currentUser } = firebase.auth();
+
+    try {
+      let result = await storeScreenshot(imageURI, startTime);
+      trip.imagePath = result.metadata.fullPath;
+      db.collection('users')
+        .doc(currentUser.uid)
+        .collection('trips')
+        .doc(startTime.toString())
+        .set(trip, { merge: true })
+        .then(() => {
+          dispatch({ type: TRIP_SAVE });
+        });
+    } catch (err) {
+      console.log(err);
+    }
   };
 };
 
