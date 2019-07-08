@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { MapView, Location, Permissions, Constants } from 'expo';
+import * as Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+import MapView from 'react-native-maps';
 import { connect } from 'react-redux';
 import { locationAdd } from '../actions';
 

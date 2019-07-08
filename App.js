@@ -7,7 +7,7 @@ import { createStore, compose, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reducers from './src/reducers';
 
-import { Font } from 'expo';
+import * as Font from 'expo-font';
 import PoppinsBold from './assets/fonts/Poppins-Bold.ttf';
 import PoppinsSemiBold from './assets/fonts/Poppins-SemiBold.ttf';
 import PoppinsLight from './assets/fonts/Poppins-Light.ttf';
