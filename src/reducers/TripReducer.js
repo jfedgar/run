@@ -22,7 +22,8 @@ const INITIAL_STATE = {
 const calculateDistance = (existingLocations, currentLocation) => {
   if (existingLocations.length === 0) return 0;
   const [lastLocation] = existingLocations.slice(-1);
-  return haversine(lastLocation.coords, currentLocation.coords);
+  const dist = haversine(lastLocation.coords, currentLocation.coords);
+  return Math.round(dist * 1000) / 1000;
 };
 
 export default (state = INITIAL_STATE, action) => {
