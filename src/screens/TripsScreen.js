@@ -3,43 +3,35 @@ import { View } from 'react-native';
 import { connect } from 'react-redux';
 import { List, FAB, Portal } from 'react-native-paper';
 import { FlatList } from 'react-native-gesture-handler';
-import _ from 'lodash';
 import * as actions from '../actions';
+import { TripListItem } from '../components/TripListItem';
+import { PreviousTripModal } from '../components/PreviousTripModal';
 
 class TripsScreen extends Component {
-
-  state = {
-    fabOpen: false
-  };
-
   constructor(props) {
     super(props);
     props.fetchTrips();
   }
 
+  state = {
+    fabOpen: false,
+    selectedTripItem: null
+  };
+
   newTrip() {
-    // go to mapscreen
-    console.log('new trip');
+    this.props.navigation.navigate('map');
   }
 
   addGoal() {
     //show modal
   }
 
-  renderItem({ item }) {
-    return (
-      <View style={{ textAlign: 'center', borderWidth: 1, borderColor: 'green' }}>
-        <List.Item
-          style={{ borderWidth: 1 }}
-          title={item.name}
-          titleStyle={{ textAlign: 'center' }}
-          description={`distance: ${item.distance} time: ${item.elapsedTime}`}
-          descriptionStyle={{ textAlign: 'center' }}
-          left={() => <List.Icon color="#000" icon="directions-run" />}
-          right={() => <List.Icon color="#000" icon="chevron-right" />}
-        />
-      </View>
-    );
+  unselectItem() {
+    this.setState({ selectedTripItem: null });
+  }
+
+  selectItem(trip) {
+    this.setState({ selectedTripItem: trip });
   }
 
   defaultList() {
@@ -52,13 +44,26 @@ class TripsScreen extends Component {
     );
   }
 
+  renderItem(trip) {
+    return (
+      <TripListItem
+        trip={trip.item}
+        selectTripFunction={this.selectItem.bind(this)}
+      />
+    );
+  }
+
   render() {
     const { trips } = this.props;
     return (
       <View style={styles.container}>
+        <PreviousTripModal
+          trip={this.state.selectedTripItem}
+          hideModalFunction={this.unselectItem.bind(this)}
+        />
         <FlatList
           data={trips}
-          renderItem={this.renderItem}
+          renderItem={this.renderItem.bind(this)}
           keyExtractor={(trip, index) => index.toString()}
           ListEmptyComponent={this.defaultList}
         />
