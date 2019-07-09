@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-import { Button, FAB, Portal, Modal } from 'react-native-paper';
+import { Button, FAB, Portal } from 'react-native-paper';
 import { captureRef as takeSnapshotAsync } from 'react-native-view-shot';
 import { LinearGradient } from 'expo-linear-gradient';
 import Map from '../components/Map';
@@ -20,23 +20,8 @@ class MapScreen extends Component {
   }
 
   state = {
-    fabOpen: false
+    fabOpen: false,
   };
-
-  hideModal() {
-    this.setState({ modalVisible: false });
-  }
-
-  renderModal() {
-    return (
-      <Modal visible={false} onDismiss={this.hideModal.bind(this)}>
-        <Image
-          style={{ width: 100, height: 100 }}
-          source={{ isStatic: true, uri: `file://${this.state.mapSnapshot}` }}
-        />
-      </Modal>
-    );
-  }
 
   toggleTrip() {
     if (this.props.running) {
@@ -51,7 +36,6 @@ class MapScreen extends Component {
   }
 
   saveTrip() {
-    console.log('save trip');
     this.takeSnapshot().then((snapshot) => {
       setTimeout(this.props.saveTrip, 2000, snapshot);
     });
@@ -81,7 +65,7 @@ class MapScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={{ width: '15%', aspectRatio: 1, position: 'absolute', top: '7%', left: '2%' }}>
-          <TouchableOpacity onPress={() => { console.log('foo'); }} >
+          <TouchableOpacity onPress={() => { this.props.navigation.navigate('trips'); }} >
             <Image
               source={BackButton}
               style={{ resizeMode: 'contain', width: '100%', height: '100%' }}
@@ -114,16 +98,6 @@ class MapScreen extends Component {
           >
             sign out
           </Button>
-
-          <Button
-            style={{ borderWidth: 1, borderColor: "black", position: 'absolute', bottom: 50 }}
-            title="take snapshot"
-            onPress={this.takeSnapshot.bind(this)}
-          >
-            take snapshot
-          </Button>
-
-          {this.renderModal()}
 
           <Portal>
             <FAB.Group
