@@ -29,10 +29,10 @@ const calculateDistance = (existingLocations, currentLocation) => {
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case TRIP_START: {
-      // if it is already started, use the original start time
-      //   otherwise, fill it in with the current time
-      const start = state.startTime || new Date().getTime();
-      return { ...state, startTime: start, running: true, endTime: null };
+      // if a trip has already been started, use the original start time
+      //   otherwise, fill it in with the current time (new trip)
+      const startTime = state.startTime || new Date().getTime();
+      return { ...state, startTime, running: true, endTime: null };
     }
     case TRIP_PAUSE: {
       const end = new Date().getTime();

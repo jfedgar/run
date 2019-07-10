@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import { List, FAB, Portal } from 'react-native-paper';
-import { FlatList } from 'react-native-gesture-handler';
-import * as actions from '../actions';
+import { resetTrip, startTrip, fetchTrips } from '../actions';
 import { TripListItem } from '../components/TripListItem';
 import { PreviousTripModal } from '../components/PreviousTripModal';
 
@@ -19,6 +18,8 @@ class TripsScreen extends Component {
   };
 
   newTrip() {
+    this.props.resetTrip();
+    this.props.startTrip();
     this.props.navigation.navigate('map');
   }
 
@@ -107,4 +108,4 @@ const mapStateToProps = ({ trip: { previousTrips } }) => {
   return { trips: previousTrips };
 };
 
-export default connect(mapStateToProps, actions)(TripsScreen);
+export default connect(mapStateToProps, { resetTrip, startTrip, fetchTrips })(TripsScreen);

@@ -45,7 +45,6 @@ const renderTripDetails = (trip, screenshotURL, hideModalFunction) => {
         style={{ width: 100, height: 100 }}
         source={{ uri: screenshotURL }}
       />
-      <Searchbar />
       <View style={{
         position: 'absolute',
         bottom: 0,
