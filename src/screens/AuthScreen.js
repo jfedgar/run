@@ -24,7 +24,7 @@ export default class AuthScreen extends Component {
   constructor(props) {
     super(props);
     const config = {
-      apiKey: 'AIzaSyCM1ZYrx16FGTYFC4dTEOYfINdvTvLpOdM',
+      apiKey: '',
       authDomain: 'runn-1ef1a.firebaseapp.com',
       databaseURL: 'https://runn-1ef1a.firebaseio.com',
       projectId: 'runn-1ef1a',
